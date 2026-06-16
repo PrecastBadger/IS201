@@ -1,0 +1,120 @@
+<!-- Asher Kretchmer IS 201 Section 01 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Film Words Viz | Asher Kretchmer</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <style>
+    .viz-container {
+      overflow-x: auto;
+      margin: 24px 0 8px;
+      display: flex;
+      justify-content: center;
+    }
+
+    #page-wrapper {
+      max-width: 1360px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- nav -->
+  <div id="site-nav">
+    <a class="brand" href="../index.html">Asher Kretchmer</a>
+    <a href="../index.html">Home</a>
+    <a href="resume.html">Resume</a>
+    <a href="scratch.html">Writing</a>
+    <a href="app.html">App</a>
+    <a href="tableau.html">Tableau</a>
+  </div>
+
+  <div id="hero">
+    <h1>Film Words</h1>
+    <p>
+      An interactive Tableau visualization exploring the most common words
+      across 1,000 of cinema's greatest films — and what those words reveal
+      about the stories we keep telling.
+    </p>
+    <p style="margin-top: 20px;">
+      <a href="#viz" style="color:#e67e22; font-weight:600;">View Visualization</a>
+    </p>
+  </div>
+
+  <div id="page-wrapper">
+
+    <div class="content-section anchor-target" id="viz">
+      <h2>Interactive Visualization</h2>
+      <p>
+        Hover over any word to see how many of the 1,000 films use it and where it
+        ranks. 
+      </p>
+
+      <div class="viz-container">
+        <div class='tableauPlaceholder' id='viz1781562058131' style='position: relative'>
+          <noscript>
+            <a href='#'>
+              <img alt='Film Words'
+                src='https://public.tableau.com/static/images/10/1000GreatestFilms/FilmWords/1_rss.png'
+                style='border: none' />
+            </a>
+          </noscript>
+          <object class='tableauViz' style='display:none;'>
+            <param name='host_url'             value='https%3A%2F%2Fpublic.tableau.com%2F' />
+            <param name='embed_code_version'   value='3' />
+            <param name='site_root'            value='' />
+            <param name='name'                 value='1000GreatestFilms&#47;FilmWords' />
+            <param name='tabs'                 value='no' />
+            <param name='toolbar'              value='yes' />
+            <param name='static_image'
+              value='https://public.tableau.com/static/images/10/1000GreatestFilms/FilmWords/1.png' />
+            <param name='animate_transition'   value='yes' />
+            <param name='display_static_image' value='yes' />
+            <param name='display_spinner'      value='yes' />
+            <param name='display_overlay'      value='yes' />
+            <param name='display_count'        value='yes' />
+            <param name='language'             value='en-US' />
+          </object>
+        </div>
+        <script type='text/javascript'>
+          var divElement  = document.getElementById('viz1781562058131');
+          var vizElement  = divElement.getElementsByTagName('object')[0];
+          if (divElement.offsetWidth > 800) {
+            vizElement.style.width  = '1300px';
+            vizElement.style.height = '1027px';
+          } else if (divElement.offsetWidth > 500) {
+            vizElement.style.width  = '1300px';
+            vizElement.style.height = '1027px';
+          } else {
+            vizElement.style.width  = '100%';
+            vizElement.style.height = '727px';
+          }
+          var scriptElement   = document.createElement('script');
+          scriptElement.src   = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+          vizElement.parentNode.insertBefore(scriptElement, vizElement);
+        </script>
+      </div>
+
+      <p style="font-size:0.8rem; color:#888; text-align:center; margin-top:8px;">
+        Source: Tableau Public — <em>1000 Greatest Films / Film Words</em>
+      </p>
+    </div>
+
+  </div>
+
+  <!-- footer -->
+  <div id="site-footer">
+    <p>
+      <a href="#hero">&#8679; Back to Top</a>
+      &nbsp;&bull;&nbsp;
+      <a href="scratch.html">Writing</a>
+      &nbsp;&bull;&nbsp;
+      <a href="../index.html">Home</a>
+    </p>
+    <p style="margin-top:8px;">&copy; 2026 Asher Kretchmer</p>
+  </div>
+
+</body>
+</html>

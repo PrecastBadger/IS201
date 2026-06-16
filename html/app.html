@@ -1,0 +1,671 @@
+<!-- Asher Kretchmer IS 201 Section 01 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Name Forge — The Weave Universe</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0e17;
+      color: #e8e0d0;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* nav */
+    #app-nav {
+      background: #0f0e17;
+      border-bottom: 1px solid #7a6230;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    #app-nav .brand {
+      font-family: Georgia, serif;
+      color: #c9a84c;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-right: auto;
+      text-decoration: none;
+    }
+    #app-nav a { color: #8a8070; text-decoration: none; font-size: 0.85rem; }
+    #app-nav a:hover { color: #c9a84c; }
+
+    /* hero */
+    .hero {
+      text-align: center;
+      padding: 44px 24px 28px;
+    }
+    .hero h1 {
+      font-family: Georgia, serif;
+      font-size: 2.2rem;
+      color: #c9a84c;
+      letter-spacing: 3px;
+      margin-bottom: 8px;
+    }
+    .hero p { color: #8a8070; font-size: 0.9rem; max-width: 440px; margin: 0 auto; }
+
+    .wrap {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 18px 60px;
+    }
+
+    /* controls */
+    .panel {
+      background: #1a1929;
+      border: 1px solid #2d2a42;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .panel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 540px) { .panel-grid { grid-template-columns: 1fr; } }
+
+    .ctrl-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #c9a84c;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .opt-list { display: flex; flex-direction: column; gap: 5px; }
+    .opt-btn {
+      background: #221f34;
+      border: 1px solid #2d2a42;
+      border-radius: 6px;
+      padding: 9px 13px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .opt-btn:hover { border-color: #7a6230; }
+    .opt-btn.sel { border-color: #c9a84c; background: rgba(201,168,76,0.12); }
+    .opt-btn .on { font-size: 0.83rem; font-weight: 600; color: #e8e0d0; display: block; }
+    .opt-btn.sel .on { color: #c9a84c; }
+    .opt-btn .oh { font-size: 0.67rem; color: #8a8070; line-height: 1.3; display: block; margin-top: 2px; }
+
+    .btn-forge {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #6b4c1a 0%, #c9a84c 50%, #6b4c1a 100%);
+      border: none;
+      border-radius: 6px;
+      color: #160f00;
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .btn-forge:hover { opacity: 0.9; }
+
+    /* result card — parchment look */
+    .result-card {
+      background: #f5ead8;
+      border-radius: 10px;
+      padding: 32px;
+      color: #2e2415;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .res-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #9a8060;
+      border: 1px solid #c4a878;
+      border-radius: 20px;
+      padding: 3px 10px;
+      margin-bottom: 14px;
+    }
+    .res-formal {
+      font-family: Georgia, serif;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #2e2415;
+      line-height: 1.2;
+      margin-bottom: 14px;
+      word-break: break-word;
+    }
+    .res-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 5px;
+    }
+    .res-lbl {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #9a8060;
+      min-width: 72px;
+    }
+    .res-val { font-family: Georgia, serif; font-size: 0.95rem; color: #4a3618; }
+
+    .res-divider { border: none; border-top: 1px solid rgba(160,128,80,0.28); margin: 18px 0; }
+
+    .weave-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 0.8rem;
+      color: #9a8060;
+    }
+    .weave-power { font-weight: 700; color: #5a3c10; }
+
+    .whisper {
+      font-style: italic;
+      font-size: 0.84rem;
+      color: #5a4220;
+      line-height: 1.65;
+      border-left: 3px solid rgba(160,120,60,0.35);
+      padding-left: 14px;
+    }
+
+    .res-actions { display: flex; gap: 10px; margin-top: 22px; }
+    .btn-copy, .btn-reroll {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-copy {
+      background: transparent;
+      border: 1px solid #b0906a;
+      color: #7a5c30;
+    }
+    .btn-copy:hover { background: rgba(160,120,60,0.08); }
+    .btn-reroll {
+      background: #6b4c1e;
+      border: 1px solid #6b4c1e;
+      color: #f5ead8;
+    }
+    .btn-reroll:hover { background: #8a6230; }
+
+    /* history */
+    .hist-label {
+      font-size: 0.67rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #8a8070;
+      margin-bottom: 8px;
+    }
+    .hist-list { display: flex; flex-direction: column; gap: 5px; }
+    .hist-item {
+      background: #1a1929;
+      border: 1px solid #2d2a42;
+      border-radius: 6px;
+      padding: 9px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .hist-item:hover { border-color: #7a6230; }
+    .hist-name { font-family: Georgia, serif; font-size: 0.88rem; color: #e8e0d0; }
+    .hist-meta { font-size: 0.67rem; color: #8a8070; margin-left: 8px; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+  <!-- nav -->
+  <div id="app-nav">
+    <a class="brand" href="../index.html">Asher Kretchmer</a>
+    <a href="../index.html">Home</a>
+    <a href="resume.html">Resume</a>
+    <a href="scratch.html">Writing</a>
+    <a href="app.html">App</a>
+    <a href="tableau.html">Tableau</a>
+  </div>
+
+  <!-- hero -->
+  <div class="hero">
+    <h1>&#10022; Name Forge &#10022;</h1>
+    <p>Generate names rooted in the nations, social orders, and naming traditions of The Weave Universe</p>
+  </div>
+
+  <div class="wrap">
+
+    <!-- controls -->
+    <div class="panel">
+      <div class="panel-grid">
+        <div>
+          <span class="ctrl-label">Region of Origin</span>
+          <div class="opt-list" id="region-list"></div>
+        </div>
+        <div>
+          <span class="ctrl-label">Social Standing</span>
+          <div class="opt-list" id="class-list"></div>
+        </div>
+      </div>
+      <button class="btn-forge" onclick="generate()">&#9889; Forge Name</button>
+    </div>
+
+    <!-- result card -->
+    <div class="result-card" id="result-card">
+      <span class="res-badge" id="res-badge"></span>
+      <div class="res-formal" id="res-formal"></div>
+      <div class="res-row"><span class="res-lbl">Goes by</span><span class="res-val" id="res-goby"></span></div>
+      <div class="res-row"><span class="res-lbl">Epithet</span><span class="res-val" id="res-nick"></span></div>
+      <hr class="res-divider" />
+      <div class="weave-row">
+        <span>&#9670; The Weave stirs near <span class="weave-power" id="res-power"></span></span>
+      </div>
+      <p class="whisper" id="res-whisper"></p>
+      <div class="res-actions">
+        <button class="btn-copy" onclick="copyName()">&#8669; Copy</button>
+        <button class="btn-reroll" onclick="generate()">&#8635; Reroll</button>
+      </div>
+    </div>
+
+    <!-- history -->
+    <div id="history-wrap" style="display:none">
+      <div class="hist-label">Recent Names</div>
+      <div class="hist-list" id="hist-list"></div>
+    </div>
+
+  </div>
+
+  <script>
+  // data
+
+  var REGIONS = [
+    { id:'castovar', label:'Castovar',        hint:'Oldest nation — vowel-rich, formal noble houses' },
+    { id:'rael',     label:'Rael',            hint:'Military state — clipped, consonant-forward' },
+    { id:'highvale', label:'Highvale',        hint:'Mountain spine — classical, diplomatic precision' },
+    { id:'sorvane',  label:'Sorvane',         hint:'Trade nation — cosmopolitan, mixed roots' },
+    { id:'skaln',    label:'Skaln',           hint:'Fortress nation — hard, utilitarian, two syllables max' },
+    { id:'itoch',    label:'Itoch',           hint:'The Collective — ancient, pre-national, compound' },
+    { id:'giant',    label:'Giant Territory', hint:'Buffer country — earned compound names' },
+    { id:'jungle',   label:'Western Jungle',  hint:'Shapeshifter communities — nature-rooted, short' }
+  ];
+
+  var CLASSES = [
+    { id:'noble',    label:'Nobility',      hint:'House names, formal titles, lineage records' },
+    { id:'commoner', label:'Commoner',      hint:'Trade names and place-based surnames' },
+    { id:'thief',    label:'Guild / Thief', hint:'Street aliases, guild marks, shadow names' },
+    { id:'mage',     label:'Mage',          hint:'School epithets, certified or otherwise' },
+    { id:'military', label:'Military',      hint:'Rank-touched, battlefield-named' },
+    { id:'devotee',  label:'Devotee',       hint:'Power-aligned, domain-named' }
+  ];
+
+  // first names — formal (nobility, mage, devotee) vs street (commoner, thief, military)
+  var FIRST = {
+    castovar: {
+      formal: ['Calamveth','Renauth','Daenrath','Telaliless','Iverath','Solenveth','Aelmaryn','Velindra','Mareveth','Castorien','Thaliven','Elhaveth','Caelivar','Renathael','Velithorn','Marenith','Aelindra','Caliveth','Ivenrath','Sorivael','Velanthra','Thurvaine'],
+      street: ['Daen','Vel','Ren','Sol','Iva','Mar','Thal','Aelin','Sorin','Caen','Lam','Veth','Elin','Cas','Maren','Reth','Velk','Soli','Thael','Renn']
+    },
+    rael: {
+      formal: ['Kraeven','Draveth','Traelon','Braekor','Grethis','Vraedor','Kraedol','Dravon','Traevel','Braelis','Kraevorn','Strevenk','Draelen','Graeven'],
+      street: ['Kren','Drav','Brak','Gret','Vren','Trael','Kael','Dorn','Brael','Krev','Drak','Grav','Trek','Vel','Bren','Raen']
+    },
+    highvale: {
+      formal: ['Edrathen','Valientor','Sorianus','Corveleth','Thenarion','Elarith','Valdorian','Mirethon','Edralan','Valdorith','Sorianel','Corventhal','Theladris','Elarven','Valdorel','Mirindal'],
+      street: ['Edrath','Valien','Sorian','Corvel','Thenar','Elar','Miren','Valdo','Sori','Edran','Thena','Mirel','Corve','Valdr']
+    },
+    sorvane: {
+      formal: ['Aurenthal','Belindorath','Tavanisel','Solmarith','Miraveth','Kaelivar','Sorventh','Luminael','Aurenvel','Belithorn','Solenvane','Mirindra','Tavaneth','Belinvael'],
+      street: ['Soren','Vael','Miren','Lyr','Tavan','Bel','Aur','Kael','Sorv','Mira','Belin','Lumin','Solm','Tave','Auren']
+    },
+    skaln: {
+      formal: ['Skarneld','Heldorvn','Vrakelm','Duskheld','Brukeld','Vornskeld'],
+      street: ['Skarn','Brak','Dusk','Heldor','Vorn','Hask','Keld','Bruk','Skeld','Dorn','Grask','Helk','Vrak','Dursk','Brekk','Skel','Grun','Drek','Skol','Heln','Vreld']
+    },
+    itoch: {
+      formal: ['Ithaelon','Corevindra','Lunethal','Faranel','Eivindra','Narethael','Ylvindra','Corivethal','Luniveth','Ithelon','Faraneth','Eivenael','Narethael'],
+      street: ['Ithael','Corev','Luneth','Faral','Eiven','Nareth','Ylv','Cor','Lun','Far','Eiv','Nar','Ylva','Itha','Cov']
+    },
+    giant: {
+      formal: ['Halvorn','Stormfell','Ironhold','Greyheld','Stonefell','Frostorn','Warborn','Boneheld','Shieldfell','Ashmark','Darkorn','Brightfell','Grimwall','Ironborn','Ashfell','Greyorn','Coldmark'],
+      street: ['Halvorn','Stormfell','Ironhold','Greyheld','Stonefell','Frostorn','Warborn','Boneheld','Shieldfell','Ashmark','Darkorn','Brightfell','Grimwall','Ironborn','Ashfell','Greyorn','Coldmark']
+    },
+    jungle: {
+      formal: ['Riverborne','Thornweave','Mistdrift','Ashroot','Grovewatch','Briarweave'],
+      street: ['Riven','Fern','Syl','Ashel','Moss','Reed','Thorn','Bark','Mist','Briar','Grove','River','Leaf','Root','Shade','Drift','Curl','Branch']
+    }
+  };
+
+  var SURNAME = {
+    noble: {
+      castovar: ['Marenveil','Cassovyn','Velithar','Aelmaren','Sorenthal','Caelthorn','Thurvaine','Iverath','Renvethal','Marenith','Aelindris','Velindris'],
+      rael:     ['Kraedonis','Draventh','Trevenkor','Grethholm','Vraedol','Straevorn','Kraevonis','Draeholm'],
+      highvale: ['Valdorian','Elarith','Corventhal','Thenarien','Soriandel','Mirenthal','Edrathan','Valdoreth'],
+      sorvane:  ['Solmark','Belinvale','Aurholm','Tavanis','Luminvale','Kaelmark','Sorventh','Miravale'],
+      skaln:    ['Ironhold','Stonewall','Darkhelm','Greyskald','Coldmark','Hellhold','Vraemark'],
+      itoch:    ['Moonweave','Riverwatch','Stonepath','Dawnhollow','Starweave','Earthwatch'],
+      giant:    ['Ironwall','Stonefall','Greyash','Bonemark','Shieldwall','Grimhold'],
+      jungle:   ['Riverborn','Thornhold','Mistwalker','Rootweave','Briarborn']
+    },
+    commoner: {
+      castovar: ['Millveth','Stoneheld','Rivervael','Ashfield','Coppermark','Claywright','Ironveil','Dustmark'],
+      rael:     ['Ironmark','Steelwright','Battleborn','Wallwatch','Coldfield','Stoneback','Frontmark'],
+      highvale: ['Hilltop','Goldvale','Oathright','Clearwater','Bridgehold','Archstone','Oathfield'],
+      sorvane:  ['Sunplain','Goldmark','Tradewind','Farhold','Richmark','Coinfield','Plainborn'],
+      skaln:    ['Ironback','Stoneborn','Coldmark','Hillhold','Greyfield','Darkwood','Hardmark'],
+      itoch:    ['Moonpath','Riversong','Dawnwatch','Earthhold','Starfall','Quietbrook','Riverdawn'],
+      giant:    ['Ironstone','Ashwall','Greyfell','Stormhold','Bonefall','Shieldborn'],
+      jungle:   ['Mossborn','Thornfield','Roothold','Barkmark','Leafborn','Shadeborn']
+    },
+    thief: {
+      all: ['Shadow','Ghost','Slip','Quickhand','Lightfoot','Paleface','Shadowstep','Ghostwalk','Fademark','Silentkey','Thinwire','Hollowstep','Softmark','Narrowpass','Stillhand','Quietfall']
+    },
+    mage: {
+      all: ['the Ashen','the Brilliant','the Dusthand','the Threadpuller','the Channeled','the Burned','the Quiet','the Careful','the Unraveled','the Woven','the Smokeless','the Still','the Hollow','the Glasshand']
+    },
+    military: {
+      castovar: ['Ironguard','Castosword','Keepersblade','Marchsword','Frontborn'],
+      rael:     ['Wallborn','Frontborn','Battlemark','Coldsteel','Shieldworn','Rankhold','Marchsword','Ironguard'],
+      highvale: ['Oathguard','Bridgesword','Passmark','Neutralhold','Archguard'],
+      sorvane:  ['Tradeguard','Marchsword','Plainborn','Sunsteel','Portwatch'],
+      skaln:    ['Ironguard','Wallborn','Coldsteel','Strongmark','Helmborn','Stonewatch'],
+      itoch:    ['Pathguard','Moonwatch','Forestborn','Quietsteel','Rootguard'],
+      giant:    ['Stormguard','Ironborn','Bonewall','Shieldfell','Grimguard'],
+      jungle:   ['Thornguard','Rootsteel','Mistwatch','Briarborn','Shadewatch']
+    },
+    devotee: {
+      spark:     ['Dawnborn','Lightscribe','Kindlemark','Firetouched','Firstlight','Newmade','Brightscribe','Forgeborn'],
+      witness:   ['Oathheld','Secretborn','Truthmark','Heldword','Sealborn','Oathscribe','Witnessheld'],
+      endurance: ['Greystone','Hardheld','Lastwalker','Stillstanding','Unbroken','Longworn','Greymark'],
+      companion: ['Threshkeeper','Quiethand','Restkeeper','Easyend','Lastbreath','Keeperthorn'],
+      keeper:    ['Stillborn','Preserveborn','Heldmark','Keptname','Unchanging','Holdborn'],
+      undone:    ['Griefborn','Stormheld','Rageborn','Highfeeling','Fullsorrow','Loveburned']
+    }
+  };
+
+  var NICK = {
+    noble:    ['"the Preserved"','"Old Blood"','"the Ancient"','"the Velvet"','"Firstborn"','"the Highborn"','"the Bloodline"','"the Named"'],
+    commoner: ['"Dusty"','"Cobble"','"Patchwork"','"Twice-Born"','"Half-Coin"','"Mudfoot"','"Greycoat"','"Copperface"'],
+    thief:    ['"the Ghost"','"Pale"','"Slip"','"Shadow"','"Whisper"','"Nothing"','"Quick"','"Fade"','"Thin"','"Still"','"the Unseen"'],
+    mage:     ['"the Ashen"','"Dusthand"','"Threadpuller"','"Sparkborn"','"the Hollow"','"the Careful"','"Ashfingers"','"Glasshand"'],
+    military: ['"the Iron"','"Wallborn"','"Steadyhand"','"the Shield"','"Lastman"','"Coldsteel"','"the Steady"','"Frontborn"'],
+    devotee:  ['"the Faithful"','"Prayerborn"','"the Devoted"','"Oathspeaker"','"the Quiet"','"Dawnseeker"','"the Aligned"','"Touched"']
+  };
+
+  // shortened goes-by for formal names
+  var SHORT_MAP = {
+    'Calamveth':'Veth','Renauth':'Ren','Daenrath':'Daen','Telaliless':'Less',
+    'Iverath':'Iver','Solenveth':'Sol','Aelmaryn':'Ael','Velindra':'Vel',
+    'Mareveth':'Mar','Castorien':'Cas','Thaliven':'Thal','Elhaveth':'El',
+    'Caelivar':'Cael','Renathael':'Ren','Velithorn':'Vel','Marenith':'Mar',
+    'Aelindra':'Aelin','Caliveth':'Cal','Ivenrath':'Iven','Sorivael':'Sori',
+    'Velanthra':'Vel','Thurvaine':'Thur',
+    'Kraeven':'Krae','Draveth':'Drav','Traelon':'Trael','Braekor':'Brae',
+    'Grethis':'Gret','Vraedor':'Vrae','Kraedol':'Krae','Dravon':'Drav',
+    'Traevel':'Trael','Braelis':'Brae','Kraevorn':'Krae','Strevenk':'Strev',
+    'Draelen':'Drae','Graeven':'Grae',
+    'Edrathen':'Edrath','Valientor':'Valien','Sorianus':'Sorian',
+    'Corveleth':'Corvel','Thenarion':'Thenar','Elarith':'Elar',
+    'Valdorian':'Valdo','Mirethon':'Miren','Edralan':'Edran',
+    'Valdorith':'Valdo','Sorianel':'Sori','Corventhal':'Corve',
+    'Theladris':'Thela','Elarven':'Elar','Valdorel':'Valdo','Mirindal':'Mirin',
+    'Aurenthal':'Auren','Belindorath':'Belin','Tavanisel':'Tavan',
+    'Solmarith':'Sol','Miraveth':'Mira','Kaelivar':'Kael','Sorventh':'Sorv',
+    'Luminael':'Lumin','Aurenvel':'Auren','Belithorn':'Belin',
+    'Solenvane':'Sol','Mirindra':'Mirin','Tavaneth':'Tavan','Belinvael':'Belin',
+    'Skarneld':'Skarn','Heldorvn':'Heldor','Vrakelm':'Vrak',
+    'Duskheld':'Dusk','Brukeld':'Bruk','Vornskeld':'Vorn',
+    'Ithaelon':'Ithael','Corevindra':'Corev','Lunethal':'Lun',
+    'Faranel':'Faral','Eivindra':'Eiven','Narethael':'Nareth',
+    'Ylvindra':'Ylv','Corivethal':'Cor','Luniveth':'Lun',
+    'Ithelon':'Itha','Faraneth':'Far','Eivenael':'Eiv',
+    'Riverborne':'River','Thornweave':'Thorn','Mistdrift':'Mist',
+    'Ashroot':'Ash','Grovewatch':'Grove','Briarweave':'Briar'
+  };
+
+  var WEAVE_MAP = {
+    castovar: { noble:'The Keeper', commoner:'Endurance', thief:'The Witness', mage:'Spark', military:'Endurance', devotee:'The Keeper' },
+    rael:     { noble:'Endurance', commoner:'Endurance', thief:'The Witness', mage:'Spark', military:'Endurance', devotee:'The Last Companion' },
+    highvale: { noble:'The Witness', commoner:'The Witness', thief:'The Witness', mage:'Spark', military:'The Witness', devotee:'The Witness' },
+    sorvane:  { noble:'Spark', commoner:'Spark', thief:'The Undone', mage:'Spark', military:'Endurance', devotee:'Spark' },
+    skaln:    { noble:'Endurance', commoner:'Endurance', thief:'The Undone', mage:'Endurance', military:'Endurance', devotee:'Endurance' },
+    itoch:    { noble:'The Last Companion', commoner:'The Last Companion', thief:'The Witness', mage:'Spark', military:'The Last Companion', devotee:'The Last Companion' },
+    giant:    { noble:'Endurance', commoner:'Endurance', thief:'The Undone', mage:'Spark', military:'Endurance', devotee:'Endurance' },
+    jungle:   { noble:'The Last Companion', commoner:'The Last Companion', thief:'The Witness', mage:'Spark', military:'The Last Companion', devotee:'The Last Companion' }
+  };
+
+  var DEVOTEE_POWER = {
+    castovar:'keeper', rael:'endurance', highvale:'witness', sorvane:'spark',
+    skaln:'endurance', itoch:'companion', giant:'endurance', jungle:'companion'
+  };
+
+  var WHISPERS = {
+    castovar:{
+      noble:    ['Born where the Keeper\'s hand rests heaviest — old blood in old houses, a name that predates the nation calling it home.','Castovar nobility carry their lineage the way they carry a wound: visibly, without apology, expecting the room to move around it.'],
+      commoner: ['Castovar commoners have lived through more theological upheaval in one generation than some nations see in ten. They\'ve learned to keep their heads down while the powers argue above them.','The keeping instinct runs even in those who never prayed for it. A Castovar commoner holds what they value as fiercely as any devotee.'],
+      thief:    ['In a city built on what is preserved, the thief knows exactly where the cracks are between what\'s kept and what\'s watched.','Castovar guild runners know the noble houses better than most nobles know each other — you learn a city by moving through it unseen.'],
+      mage:     ['Castovar mage schools are old institutions with old rivalries. A certified mage here carries the weight of a tradition that predates the theological crisis by centuries.','The newest thing in a Castovar mage\'s life is the restitution current — and none of them know what to do with it yet.'],
+      military: ['Castovar military stands at a cold front that the new theology threatens to turn hot at any moment. Every soldier here has done the math on what restitution of old losses would actually cost.','There are Castovar soldiers who believe in the restitution theology and soldiers who fear it. Some are the same soldier.'],
+      devotee:  ['A Castovar devotee right now is navigating two currents from the same power simultaneously. What they prayed for and what they didn\'t ask for are both answering.','The Keeper\'s old devoted don\'t always recognize what the new current makes them capable of — until they reach for it and something different comes back.']
+    },
+    rael:{
+      noble:    ['Rael nobility named itself in opposition and has been living inside that opposition ever since. The standoff with Castovar is not political to them — it is identity.','A Rael noble house in the era of restitution theology is looking at the front and seeing not a line to hold but a tab they apparently owe.'],
+      commoner: ['In Rael you grow up knowing what you\'re against before you know what you\'re for. It makes for a particular kind of clarity.','Rael commoners have a word for the feeling of watching a threat approach and deciding to name it rather than avoid it. The word doesn\'t translate.'],
+      thief:    ['Even Rael thieves are clipped and functional in their aliases. No flourish, no excess — the job, the exit, and a name that fits in one breath.','Guild work in a military nation requires different instincts. You steal around soldiers who notice things.'],
+      mage:     ['State-school trained in most cases — utility over theory, application over elegance. A Rael mage knows what the spell does before they know why it works.','Combat magic in Rael is practical by design. The mage schools here certify for the front, not the lecture hall.'],
+      military: ['Rael military is the cold war in person. Every soldier is the standoff — trained for it, defined by it, waiting for the moment it turns warm.','The restitution theology puts every Rael soldier in a strange position. They fought for territory that Castovar now claims was never legitimately won. Some of them agree.'],
+      devotee:  ['Endurance is the natural lean for a nation that has held a front for generations without resolution. The Rael devoted don\'t pray for victory — they pray to still be standing.','The Last Companion has more Rael devoted than the nation acknowledges. A soldier who has watched enough people die eventually makes peace with death\'s domain — or breaks.']
+    },
+    highvale:{
+      noble:    ['Highvale nobility is diplomatic by vocation and geological by leverage. They don\'t control the routes — they are the routes.','A Highvale noble house that speaks without precision is unusual enough to be alarming. Clean endings on names, clean delivery on oaths — the two are not unrelated.'],
+      commoner: ['In Highvale, even the common people know what a witnessed oath is worth. You grow up adjacent to that institution. You learn to mean what you say.','Highvale commoners have an unusual relationship with secrets — not because they keep more of them, but because they understand what it costs to break one.'],
+      thief:    ['Thieving in the oath-nation is either the bravest or the most desperate thing a person can do. The Witness doesn\'t watch only the noble houses.','A Highvale guild runner walks around knowing that the institutional foundation of the nation is exactly what they work against. Most of them don\'t think about that. Some can\'t stop.'],
+      mage:     ['Temple schools in Highvale tilt toward theory over application — the Witness\'s domain makes careful thought a religious practice. Highvale mages are precise and patient.','A Highvale mage in the current theological crisis is watching two competing claims about what witnesses are for collide in real time.'],
+      military: ['Highvale military enforces neutrality rather than pursuing conquest. It\'s a stranger job than it sounds — you are the absence of an outcome, standing armed.','The mountain passes that make Highvale significant make its military the most geopolitically important force on the continent that almost never uses force.'],
+      devotee:  ['To be devoted to The Witness in Highvale is to live inside the institution that your power runs. Clarifying in some ways. Suffocating in others.','Witness devotees from Highvale are trusted everywhere and watched carefully. The nation that produces the most reliable oath-witnesses also has the most leverage over the process.']
+    },
+    sorvane:{
+      noble:    ['Sorvane merchant nobility built its houses on the understanding that everything has a value and most things have a price. Names here circulate like currency through multiple languages.','The restitution theology is spreading through Sorvane via Castovar trade routes, diluted but present. A Sorvane noble house watches its most important alliance become a theological vector.'],
+      commoner: ['Sorvane is where you end up when you left somewhere else. The commoner names carry traces of outside roots alongside the heartland base.','The sun plain opens toward trade and trade opens toward everything else. A Sorvane commoner has likely heard more naming traditions than a Highvale noble.'],
+      thief:    ['In the trade nation\'s markets and docks, theft is a profession practiced at scale. The guild here is old and well-organized — it operates with something close to transparency because it\'s too large to hide.','A Sorvane thief\'s aliases draw from the widest pool on the continent. When every culture\'s words are available, the street name can come from anywhere.'],
+      mage:     ['Sorvane\'s exposure to outside magical traditions through commerce means its mages often have broader affinities than they can account for. The guild schools here certify more edge cases.','Spark\'s domain and Sorvane\'s commercial instinct overlap significantly. Creation and commerce are almost the same theology when you look at it squarely.'],
+      military: ['Sorvane military spends more time managing trade disputes than holding fronts. It\'s a different kind of discipline — enforcement without ideology.','The commercial alliances that make Sorvane wealthy also make its military complicated. You don\'t threaten your suppliers. Sorvane soldiers learn this early.'],
+      devotee:  ['Sorvane Spark devotees are common enough to be unremarkable — the library at every temple fits the national character. Commerce is creation at a certain scale.','The Undone has a quiet hold on Sorvane that nobody discusses politely — where there is enough wealth to pursue extreme feeling, extreme feeling gets pursued.']
+    },
+    skaln:{
+      noble:    ['Skaln nobility isn\'t built on lineage records — it\'s built on cost of conquest. The great houses became great by making themselves too expensive to take.','A Skaln noble house name is a declaration of durability. No elegance, no flourish. The name survives because the house does.'],
+      commoner: ['Skaln commoners work in conditions that would break most of the heartland and treat that as simply the weather.','You don\'t explain your name in Skaln. You carry it. It\'s two syllables because that\'s how long you have before something needs your attention.'],
+      thief:    ['Even Skaln thieves are practical. Steal what you need, alias that survives the job, and get out.','Guild work in the fortress nation requires a different kind of stealth — not invisibility, but the ability to look exactly like you belong in a hard place.'],
+      mage:     ['Skaln mage tradition is blunt and functional. No theory for theory\'s sake. The spell does a job or it doesn\'t get taught.','A Skaln-trained mage abroad stands out — not by power level but by approach. No elegance, no excess, no explanation. The effect. The cost. Done.'],
+      military: ['Skaln military is the fortress nation\'s purpose made flesh. It exists to make conquest more expensive than the gain. It has always succeeded.','Serving in Skaln military is not an ideology. It\'s a function. The front holds or it doesn\'t. The names get shorter when the fighting gets harder.'],
+      devotee:  ['Endurance doesn\'t need a theology in Skaln — it needs a practice. Devoted here often can\'t explain their alignment in religious terms. They just haven\'t stopped yet.','The Last Companion has a quiet presence in Skaln that isn\'t broadcast. Soldiers in hard country make peace with death before they make peace with the powers.']
+    },
+    itoch:{
+      noble:    ['Itoch elder-houses predate the national concept. Bound by compact rather than lineage, the great families are community anchors — not rulers.','A formal name from Itoch carries something the heartland calls old and doesn\'t look at too closely. The compound elements in the name describe something about the person.'],
+      commoner: ['Itoch commoner life is integrated in ways the heartland finds unsettling — your neighbor might be a creature the Rael military would hunt on sight.','The oldest naming traditions in Itoch assume you will live alongside things that are not like you. The names carry that assumption quietly.'],
+      thief:    ['The Itoch concept of theft is complicated. The Collective\'s relationship with ownership is already different from heartland convention. What counts as taking?','A guild runner from Itoch operating in heartland cities carries a different relationship with secrets — some things in Itoch are communal knowledge, and the line is not where outsiders expect.'],
+      mage:     ['Itoch magical tradition is the oldest and strangest on the continent. Not wrong — just oriented differently. What heartland schools call heretical, Itoch calls foundational.','A mage trained in Itoch carries affinities that don\'t certify cleanly because the guild system didn\'t develop them. Multiple powers acknowledged simultaneously creates a different relationship with allegiance.'],
+      military: ['Itoch doesn\'t have a centralized military by heartland standards. The compact-bound communities defend themselves — which means the defenders are as varied as the Collective itself.','A military figure from Itoch in the heartland is often read wrong. The martial culture here is communal and creature-integrated, which looks nothing like what Rael or Skaln would call an army.'],
+      devotee:  ['The Last Companion\'s devoted in Itoch are among the oldest in the world. Creature integration means a different relationship with the line between living and not.','Itoch devotion doesn\'t treat the powers as separate from the community. Multiple powers are acknowledged at the same sanctum. The devotee here is a social role, not a private one.']
+    },
+    giant:{
+      noble:    ['Giant naming is earned at a significant moment — you don\'t receive a compound name at birth, you receive it when something happens that names you.','The buffer territory\'s great line-holders carry names that describe events. The name says exactly what the house did to earn the right to keep it.'],
+      commoner: ['In the buffer territory you learn to exist in contested space — neither Skaln nor Rael, in competition with both. The compound names carry this position.','A giant-territory commoner name describes something because the person it describes is expected to be something. The naming tradition assumes significance.'],
+      thief:    ['The buffer territory isn\'t rich in guild infrastructure — the crime here is raider-adjacent, which is to say it\'s different in character from heartland guild work.','A thief from giant territory in a heartland city sticks out in ways that have nothing to do with stealth. The alias softens this. It doesn\'t eliminate it.'],
+      mage:     ['Magic in the buffer territory is taken pragmatically — if a greater power\'s alignment offers an edge in contested space, you take it without philosophizing.','A part-giant mage is unusual enough anywhere. In heartland cities they\'re remarkable enough to attract attention, which is either useful or dangerous depending on the day.'],
+      military: ['Buffer territory military culture is raider-shaped — fast, hard, opportunistic. It doesn\'t hold lines the way Skaln does. It makes holding lines expensive.','The standoff between Skaln and Rael that the giant territory exists inside has produced a military culture that understands leverage better than ideology.'],
+      devotee:  ['Endurance is the dominant devotional current in the buffer territory — not as formal theology, but as the practical religion of people who survive contested space.','The Last Companion has presence in the buffer territory\'s battlefield culture. When the raiding is done, someone makes peace with what it cost.']
+    },
+    jungle:{
+      noble:    ['The western jungle community-elders aren\'t nobles in any heartland sense — they\'re anchors. The oldest forms. Sometimes not entirely one shape for very long.','A formal shapeshifter name from the jungle communities carries something the heartland can\'t classify. The name doesn\'t always describe the person it describes right now.'],
+      commoner: ['The jungle communities have been building their own thing without interference for longer than most heartland nations have existed. The heartland calls this ignorable. The jungle communities call it convenient.','A shapeshifter commoner name is short because the naming tradition doesn\'t assume permanence of form. What you\'re called is simpler than what you are.'],
+      thief:    ['A shapeshifter who has left the jungle communities and taken up guild work in heartland cities has advantages the guild values and exploits heavily. Whether the arrangement is comfortable is a different question.','The alias name for a shapeshifter thief is almost redundant — the self is already a kind of alias. The guild name is a third layer on top of a person who already changes.'],
+      mage:     ['Jungle-tradition magic is intertwined with shapeshifter culture in ways that heartland theory can\'t account for. The glass-sense reads it as wrong because heartland theory doesn\'t have a framework for it.','A jungle-trained mage carries the oldest magical tradition on the continent in a form the heartland didn\'t develop and mostly doesn\'t recognize.'],
+      military: ['Shapeshifters from the western communities who find their way into heartland military work are used in ways they eventually resent. The tactical value of a person who can change form is obvious. The person part is less obvious to the institution.','The communities the heartland ignores have been defending their own territory without the heartland noticing. The military tradition here is exactly as old as it needed to be.'],
+      devotee:  ['The Last Companion\'s presence in the shapeshifter communities is deep and old — where the self is not fixed, the threshold between living and not is a different kind of question.','Multiple powers are acknowledged in the jungle communities simultaneously. The devotee concept maps strangely onto a culture that doesn\'t treat religious identity as singular.']
+    }
+  };
+
+  // state
+  var selRegion = 'castovar';
+  var selClass  = 'noble';
+  var nameHistory = [];
+  var lastRes   = null;
+
+  function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function getFirst(region, cls) {
+    var isFormal = (cls === 'noble' || cls === 'mage' || cls === 'devotee');
+    var pool = FIRST[region];
+    var tier = (isFormal && pool.formal.length) ? 'formal' : 'street';
+    return pick(pool[tier] || pool.street);
+  }
+
+  function getSurname(region, cls) {
+    if (cls === 'thief') return pick(SURNAME.thief.all);
+    if (cls === 'mage')  return pick(SURNAME.mage.all);
+    if (cls === 'devotee') {
+      var power = DEVOTEE_POWER[region] || 'endurance';
+      return pick(SURNAME.devotee[power]);
+    }
+    var pool = (SURNAME[cls] && SURNAME[cls][region]) ? SURNAME[cls][region] : SURNAME.commoner.castovar;
+    return pick(pool);
+  }
+
+  function goesBy(first, cls) {
+    if (cls === 'commoner' || cls === 'thief' || cls === 'military') return first;
+    return SHORT_MAP[first] || first.slice(0, Math.ceil(first.length * 0.55));
+  }
+
+  function generate() {
+    var first   = getFirst(selRegion, selClass);
+    var surname = getSurname(selRegion, selClass);
+    var nick    = pick(NICK[selClass]);
+    var short   = goesBy(first, selClass);
+    var power   = (WEAVE_MAP[selRegion] && WEAVE_MAP[selRegion][selClass]) ? WEAVE_MAP[selRegion][selClass] : 'The Weave';
+    var wList   = (WHISPERS[selRegion] && WHISPERS[selRegion][selClass]) ? WHISPERS[selRegion][selClass] : ['The Weave stirs.'];
+    var whisper = pick(wList);
+
+    var formal;
+    if (selClass === 'thief') {
+      formal = first + ' "' + surname + '"';
+    } else {
+      formal = first + ' ' + surname;
+    }
+
+    // find human-readable labels
+    var rLabel = selRegion;
+    var cLabel = selClass;
+    for (var i = 0; i < REGIONS.length; i++) {
+      if (REGIONS[i].id === selRegion) { rLabel = REGIONS[i].label; break; }
+    }
+    for (var j = 0; j < CLASSES.length; j++) {
+      if (CLASSES[j].id === selClass) { cLabel = CLASSES[j].label; break; }
+    }
+
+    lastRes = { formal:formal, short:short, nick:nick, power:power, whisper:whisper, rLabel:rLabel, cLabel:cLabel };
+    renderResult(lastRes);
+    pushHistory(lastRes);
+  }
+
+  function renderResult(res) {
+    document.getElementById('result-card').style.display = 'block';
+    document.getElementById('res-badge').textContent   = res.rLabel + ' · ' + res.cLabel;
+    document.getElementById('res-formal').textContent  = res.formal;
+    document.getElementById('res-goby').textContent    = res.short;
+    document.getElementById('res-nick').textContent    = res.nick;
+    document.getElementById('res-power').textContent   = res.power;
+    document.getElementById('res-whisper').textContent = res.whisper;
+  }
+
+  function pushHistory(res) {
+    nameHistory.unshift(res);
+    if (nameHistory.length > 6) nameHistory.pop();
+    renderHistory();
+  }
+
+  function renderHistory() {
+    var wrap = document.getElementById('history-wrap');
+    var list = document.getElementById('hist-list');
+    if (nameHistory.length === 0) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    var html = '';
+    for (var i = 0; i < nameHistory.length; i++) {
+      var h = nameHistory[i];
+      html += '<div class="hist-item" onclick="restoreHistory(' + i + ')">';
+      html += '<span class="hist-name">' + h.formal + '</span>';
+      html += '<span class="hist-meta">' + h.rLabel + ' &middot; ' + h.cLabel + '</span>';
+      html += '</div>';
+    }
+    list.innerHTML = html;
+  }
+
+  function restoreHistory(i) {
+    lastRes = nameHistory[i];
+    renderResult(lastRes);
+  }
+
+  function copyName() {
+    if (!lastRes) return;
+    var text = 'Name: ' + lastRes.formal + '\n'
+             + 'Goes by: ' + lastRes.short + '\n'
+             + 'Epithet: ' + lastRes.nick + '\n'
+             + 'Origin: ' + lastRes.rLabel + ' · ' + lastRes.cLabel + '\n'
+             + 'Weave Signature: ' + lastRes.power + '\n\n'
+             + lastRes.whisper;
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = document.querySelector('.btn-copy');
+      var orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(function() { btn.textContent = orig; }, 1600);
+    });
+  }
+
+  function buildPickers() {
+    var regionList = document.getElementById('region-list');
+    for (var i = 0; i < REGIONS.length; i++) {
+      var btn = document.createElement('button');
+      btn.className = 'opt-btn' + (REGIONS[i].id === selRegion ? ' sel' : '');
+      btn.innerHTML = '<span class="on">' + REGIONS[i].label + '</span><span class="oh">' + REGIONS[i].hint + '</span>';
+      btn.setAttribute('data-region', REGIONS[i].id);
+      btn.onclick = function() {
+        selRegion = this.getAttribute('data-region');
+        var all = document.querySelectorAll('#region-list .opt-btn');
+        for (var j = 0; j < all.length; j++) all[j].classList.remove('sel');
+        this.classList.add('sel');
+      };
+      regionList.appendChild(btn);
+    }
+
+    var classList = document.getElementById('class-list');
+    for (var k = 0; k < CLASSES.length; k++) {
+      var btn2 = document.createElement('button');
+      btn2.className = 'opt-btn' + (CLASSES[k].id === selClass ? ' sel' : '');
+      btn2.innerHTML = '<span class="on">' + CLASSES[k].label + '</span><span class="oh">' + CLASSES[k].hint + '</span>';
+      btn2.setAttribute('data-class', CLASSES[k].id);
+      btn2.onclick = function() {
+        selClass = this.getAttribute('data-class');
+        var all = document.querySelectorAll('#class-list .opt-btn');
+        for (var j = 0; j < all.length; j++) all[j].classList.remove('sel');
+        this.classList.add('sel');
+      };
+      classList.appendChild(btn2);
+    }
+  }
+
+  buildPickers();
+  </script>
+</body>
+</html>
